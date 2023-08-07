@@ -1,0 +1,23 @@
+services:
+  app:
+    container_name: lnd-web-api
+    image: lnd-web-api:v3
+    environment:
+      - SERVER_PORT=8080
+      - DB_HOST=postgres
+      - DB_PASSWORD=postgres
+      - DB_USERNAME=postgres
+      - DB_PORT=5432
+      - DB_NAME=postgres
+    ports:
+      - "8080:8080"
+
+  postman:
+    image: postman/newman:alpine
+    container_name: postman
+    command: run /etc/newman/LND-Web-API.postman-collection.json
+    volumes:
+      - ./../postman:/etc/newman
+    depends_on:
+      - app
+    network_mode: host
