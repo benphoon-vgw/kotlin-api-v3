@@ -1,2 +1,3 @@
 rootProject.name="kotlin-api-v3"
-include(":app")
+include("app")
+include("http")
