@@ -3,7 +3,9 @@ package co.vgw.webapi.http
 import co.vgw.webapi.domain.BalanceQuery
 import co.vgw.webapi.domain.CommandHandler
 import co.vgw.webapi.domain.CreditCommand
+import co.vgw.webapi.domain.DuplicateTransactionException
 import co.vgw.webapi.domain.QueryHandler
+import co.vgw.webapi.domain.VersionErrorException
 import co.vgw.webapi.domain.WalletNotFoundException
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -20,6 +22,16 @@ class WalletController (
     override fun setupErrorHandler(statusPagesConfig: StatusPagesConfig) {
         statusPagesConfig.exception<WalletNotFoundException> { call, _ ->
             call.respond(HttpStatusCode.NotFound)
+        }
+        statusPagesConfig.exception<DuplicateTransactionException> { call, cause ->
+            val walletBalance = queryHandler.handleBalanceQuery(BalanceQuery(cause.walletId))
+            call.respond(
+                HttpStatusCode.Accepted,
+                BalanceResponse(walletBalance.version, walletBalance.closingBalance, walletBalance.transactionId),
+            )
+        }
+        statusPagesConfig.exception<VersionErrorException> { call, _ ->
+            call.respond(HttpStatusCode.InternalServerError)
         }
     }
 
