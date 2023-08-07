@@ -2,11 +2,10 @@ plugins {
     standardKotlinJvmModule()
     application
 }
-repositories {
-    gradlePluginPortal()
-}
 dependencies {
-    implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.8.10")
+    implementation(libs.bundles.ktor.server.app)
+    implementation(project(":domain"))
+    implementation(project(":http"))
 }
 application {
     mainClass.set("co.vgw.webapi.app.MainKt")
