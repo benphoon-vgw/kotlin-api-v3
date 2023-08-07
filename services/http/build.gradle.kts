@@ -5,4 +5,5 @@ plugins {
 
 dependencies {
     implementation(libs.bundles.ktor.server.app)
+    implementation(project(":domain"))
 }
