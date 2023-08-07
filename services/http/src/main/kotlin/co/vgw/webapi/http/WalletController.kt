@@ -3,7 +3,9 @@ package co.vgw.webapi.http
 import co.vgw.webapi.domain.BalanceQuery
 import co.vgw.webapi.domain.CommandHandler
 import co.vgw.webapi.domain.CreditCommand
+import co.vgw.webapi.domain.DebitCommand
 import co.vgw.webapi.domain.DuplicateTransactionException
+import co.vgw.webapi.domain.InsufficientBalanceException
 import co.vgw.webapi.domain.QueryHandler
 import co.vgw.webapi.domain.VersionErrorException
 import co.vgw.webapi.domain.WalletNotFoundException
@@ -33,6 +35,9 @@ class WalletController (
         statusPagesConfig.exception<VersionErrorException> { call, _ ->
             call.respond(HttpStatusCode.InternalServerError)
         }
+        statusPagesConfig.exception<InsufficientBalanceException> { call, _ ->
+            call.respond(HttpStatusCode.BadRequest)
+        }
     }
 
     override fun setupRoutes(routing: Routing) {
@@ -61,6 +66,20 @@ class WalletController (
                             coins = creditRequest.coins,
                             walletId = walletId,
                             transactionId = creditRequest.transactionId,
+                        ),
+                    )
+                    call.respond(HttpStatusCode.Created)
+                }
+
+                post("/debit") {
+                    val walletId = call.parameters["walletId"]?.let { UUID.fromString(it) }
+                        ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    val debitRequest = call.receive<DebitRequest>()
+                    commandHandler.handleDebit(
+                        DebitCommand(
+                            coins = debitRequest.coins,
+                            walletId = walletId,
+                            transactionId = debitRequest.transactionId,
                         ),
                     )
                     call.respond(HttpStatusCode.Created)

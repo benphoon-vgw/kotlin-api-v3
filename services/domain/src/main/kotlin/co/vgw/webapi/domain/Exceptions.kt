@@ -15,3 +15,8 @@ data class VersionErrorException(
     val version: Int,
     val walletId: UUID
 ) : Exception("Version [${version}] of wallet [${walletId}] has already been processed.")
+
+data class InsufficientBalanceException(
+    val transactionId: String,
+    val walletId: UUID
+) : Exception("Insufficient balance in wallet [${walletId}] to complete transaction [${transactionId}].")
