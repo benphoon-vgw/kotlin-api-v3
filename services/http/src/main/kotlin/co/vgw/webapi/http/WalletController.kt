@@ -2,6 +2,7 @@ package co.vgw.webapi.http
 
 import co.vgw.webapi.domain.BalanceQuery
 import co.vgw.webapi.domain.CommandHandler
+import co.vgw.webapi.domain.CreditCommand
 import co.vgw.webapi.domain.QueryHandler
 import co.vgw.webapi.domain.WalletNotFoundException
 import io.ktor.http.*
@@ -38,20 +39,20 @@ class WalletController (
                         ),
                     )
                 }
-            }
 
-            post("/credit") {
-                val walletId = call.parameters["walletId"]?.let { UUID.fromString(it) }
-                    ?: return@post call.respond(HttpStatusCode.BadRequest)
-                val creditRequest = call.receive<CreditRequest>()
-                commandHandler.handleCredit(
-                    CreditCommand(
-                        coins = creditRequest.coins,
-                        walletId = walletId,
-                        transactionId = creditRequest.transactionId,
-                    ),
-                )
-                call.respond(HttpStatusCode.Created)
+                post("/credit") {
+                    val walletId = call.parameters["walletId"]?.let { UUID.fromString(it) }
+                        ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    val creditRequest = call.receive<CreditRequest>()
+                    commandHandler.handleCredit(
+                        CreditCommand(
+                            coins = creditRequest.coins,
+                            walletId = walletId,
+                            transactionId = creditRequest.transactionId,
+                        ),
+                    )
+                    call.respond(HttpStatusCode.Created)
+                }
             }
         }
     }
