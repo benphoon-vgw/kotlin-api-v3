@@ -2,7 +2,6 @@
 ## Prerequisites
 
 - Must have docker installed locally
-- Run the following command to connect Docker to TestContainers dependency: `sudo ln -s $HOME/.docker/run/docker.sock /var/run/docker.sock`
 
 ## Scripts
 
