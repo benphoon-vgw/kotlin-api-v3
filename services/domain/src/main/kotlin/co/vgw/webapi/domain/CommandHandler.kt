@@ -12,4 +12,16 @@ class CommandHandler(private val repository: TransactionRepository) {
         repository.saveTransactions(wallet.pendingTransactions)
         wallet.pendingTransactions.clear()
     }
+
+    fun handleDebit(debitCommand: DebitCommand){
+        val lastTransaction = repository.getLastTransaction(debitCommand.walletId)
+        val wallet = Wallet(debitCommand.walletId)
+
+        if(lastTransaction != null) {
+            wallet.apply(lastTransaction.closingBalance, lastTransaction.version)
+        }
+        wallet.debit(debitCommand)
+        repository.saveTransactions(wallet.pendingTransactions)
+        wallet.pendingTransactions.clear()
+    }
 }

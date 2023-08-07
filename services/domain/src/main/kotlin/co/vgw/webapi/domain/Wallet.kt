@@ -22,6 +22,25 @@ class Wallet(
         )
     }
 
+    fun debit(debitCommand: DebitCommand) {
+        if (version == 0) {
+            throw WalletNotFoundException(debitCommand.walletId)
+        }
+        if (balance < debitCommand.coins) {
+            throw InsufficientBalanceException(transactionId = debitCommand.transactionId, walletId = debitCommand.walletId)
+        }
+        add(
+            Transaction(
+                walletId = debitCommand.walletId,
+                transactionId = debitCommand.transactionId,
+                version = version + 1,
+                coins = debitCommand.coins,
+                closingBalance = balance - debitCommand.coins,
+                transactionType = TransactionType.DEBIT
+            )
+        )
+    }
+
     internal fun apply(balance: Int, version: Int){
         this.balance = balance
         this.version = version
