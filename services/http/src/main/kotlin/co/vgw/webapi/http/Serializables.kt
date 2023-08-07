@@ -13,3 +13,9 @@ data class CreditRequest(
     val transactionId: String,
     val coins: Int
 )
+
+@Serializable
+data class DebitRequest(
+    val transactionId: String,
+    val coins: Int,
+)
