@@ -11,6 +11,9 @@ services:
       - DB_NAME=postgres
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postman:
     image: postman/newman:alpine
@@ -20,4 +23,22 @@ services:
       - ./../postman:/etc/newman
     depends_on:
       - app
+      - postgres
     network_mode: host
+
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    volumes:
+      - ./database/src/main/resources/migrations/:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
