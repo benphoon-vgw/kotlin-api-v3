@@ -8,3 +8,8 @@ data class BalanceResponse(
     val coins: Int,
     val transactionId: String
 )
+@Serializable
+data class CreditRequest(
+    val transactionId: String,
+    val coins: Int
+)
